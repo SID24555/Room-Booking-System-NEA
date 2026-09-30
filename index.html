@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html class="h-full" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>
+        Herschel Grammar School - Room Booking System
+    </title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link href="styles.css" rel="stylesheet"/>
+</head>
+<body class="h-full bg-gray-50">
+<div class="h-full overflow-auto" id="app">
+    <!-- Loading Screen -->
+    <div class="fixed inset-0 gradient-bg flex items-center justify-center z-50" id="loading-screen">
+        <div class="text-center text-white">
+            <div class="w-16 h-16 border-4 border-white border-t-yellow-400 rounded-full animate-spin mx-auto mb-4">
+            </div>
+            <p class="text-lg">
+                Loading Booking System...
+            </p>
+        </div>
+    </div>
+    <!-- Main Container -->
+    <div class="hidden h-full flex flex-col" id="main-container">
+        <!-- Header -->
+        <header class="gradient-bg text-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 py-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <!-- School Logo SVG -->
+                        <svg class="w-12 h-12" fill="none" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" fill="#fbbf24" r="45" stroke="white" stroke-width="3">
+                            </circle>
+                            <path d="M50 20 L75 40 L75 75 L25 75 L25 40 Z" fill="white">
+                            </path>
+                            <rect fill="#1a5f3f" height="20" width="10" x="45" y="55">
+                            </rect>
+                            <rect fill="#1a5f3f" height="10" width="8" x="32" y="45">
+                            </rect>
+                            <rect fill="#1a5f3f" height="10" width="8" x="60" y="45">
+                            </rect>
+                            <polygon fill="#1a5f3f" points="50,15 80,38 20,38">
+                            </polygon>
+                        </svg>
+                        <div>
+                            <h1 class="font-display text-xl font-bold" id="school-name-header">
+                                Herschel Grammar School
+                            </h1>
+                            <p class="text-sm text-green-200" id="system-title-header">
+                                Room Booking System
+                            </p>
+                        </div>
+                    </div>
+                    <!-- User Info & Navigation -->
+                    <div class="hidden flex items-center space-x-4" id="user-nav">
+                        <div class="bg-yellow-400 text-green-900 px-3 py-1 rounded-full text-sm font-semibold" id="week-indicator">
+                        </div>
+                        <!-- Notification Bell -->
+                        <button class="relative p-2 hover:bg-green-600 rounded-full transition" id="notification-bell">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                </path>
+                            </svg>
+                            <span class="hidden absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold" id="notification-badge">
+          0
+         </span>
+                        </button>
+                        <!-- Undo Button -->
+                        <button class="hidden px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded text-sm transition flex items-center space-x-1" id="undo-btn" title="Undo last action">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                </path>
+                            </svg>
+                            <span id="undo-text">
+          Undo
+         </span>
+                        </button>
+                        <span class="text-sm" id="user-display">
+        </span>
+                        <button class="px-3 py-1 bg-green-700 hover-green rounded text-sm transition" id="nav-calendar">
+                            Calendar
+                        </button>
+                        <button class="px-3 py-1 bg-green-700 hover-green rounded text-sm transition" id="nav-my-bookings">
+                            My Bookings
+                        </button>
+                        <button class="hidden px-3 py-1 bg-yellow-500 hover:bg-yellow-400 text-green-900 rounded text-sm transition font-medium" id="nav-admin">
+                            Admin
+                        </button>
+                        <button class="px-3 py-1 bg-red-500 hover:bg-red-400 rounded text-sm transition" id="logout-btn">
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Reminder Banner -->
+        <div class="hidden bg-yellow-400 text-green-900 px-4 py-3 pulse-reminder" id="reminder-banner">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        </path>
+                    </svg>
+                    <span class="font-medium" id="reminder-text">
+       </span>
+                </div>
+                <button class="px-3 py-1 bg-green-700 text-white rounded text-sm hover:bg-green-600 transition" id="dismiss-reminder">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+        <!-- Notification Queue Panel -->
+        <div class="hidden bg-white shadow-lg border-b-2 border-green-600" id="notification-panel">
+            <div class="max-w-7xl mx-auto px-4 py-3">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold text-green-800 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                            </path>
+                        </svg>
+                        Notifications (
+                        <span id="queue-count">
+         0
+        </span>
+                    </h3>
+                    <button class="text-gray-400 hover:text-gray-600 transition" id="close-notification-panel">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="space-y-2 max-h-64 overflow-y-auto scrollbar-thin" id="notification-list">
+                    <!-- Notifications will be inserted here -->
+                </div>
+            </div>
+        </div>
+        <!-- Content Area -->
+        <main class="flex-1 overflow-auto p-4">
+            <div class="max-w-7xl mx-auto">
+                <!-- Auth Section -->
+                <div class="max-w-md mx-auto" id="auth-section">
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <!-- Auth Tabs -->
+                        <div class="flex border-b">
+                            <button class="flex-1 py-3 text-center font-medium tab-active transition" id="login-tab">
+                                Login
+                            </button>
+                            <button class="flex-1 py-3 text-center font-medium text-gray-500 hover:text-green-700 transition" id="register-tab">
+                                Register
+                            </button>
+                        </div>
+                        <!-- Login Form -->
+                        <div class="p-6 fade-in" id="login-form">
+                            <h2 class="text-2xl font-display font-bold text-green-800 mb-6 text-center">
+                                Welcome Back
+                            </h2>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1" for="login-email">
+                                        Email
+                                    </label>
+                                    <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition" id="login-email" placeholder="your.email@herschel.slough.sch.uk" type="email"/>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1" for="login-password">
+                                        Password
+                                    </label>
+                                    <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition" id="login-password" placeholder="Enter your password" type="password"/>
+                                </div>
+                                <div class="hidden text-red-500 text-sm" id="login-error">
+                                </div>
+                                <button class="w-full py-3 bg-green-700 hover:bg-green-600 text-white rounded-lg font-medium transition" id="login-btn">
+                                    Login
+                                </button>
+                            </div>
+                            <!-- Demo Accounts -->
+                            <div class="mt-6 pt-6 border-t">
+                                <p class="text-sm text-gray-500 text-center mb-3">
+                                    Demo Accounts
+                                </p>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button class="demo-login px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded text-xs font-medium transition" data-role="admin">
+                                        Admin
+                                    </button>
+                                    <button class="demo-login px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded text-xs font-medium transition" data-role="teacher">
+                                        Teacher
+                                    </button>
+                                    <button class="demo-login px-3 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded text-xs font-medium transition" data-role="student">
+                                        Student
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Register Form -->
+                        <div class="hidden p-6 fade-in" id="register-form">
+                            <h2 class="text-2xl font-display font-bold text-green-800 mb-6 text-center">
+                                Create Account
+                            </h2>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1" for="register-name">
+                                        Full Name
+                                    </label>
+                                    <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition" id="register-name" placeholder="Arnav Kane" type="text"/>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1" for="register-initials">
+                                        Initials (3 letters)
+                                    </label>
+                                    <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition uppercase" id="register-initials" maxlength="3" placeholder="AKA" type="text"/>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1" for="register-email">
+                                        Email
+                                    </label>
+                                    <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition" id="register-email" placeholder="your.email@herschel.slough.sch.uk" type="email"/>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1" for="register-password">
+                                        Password
+                                    </label>
+                                    <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition" id="register-password" placeholder="Min 8 characters" type="password"/>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1" for="register-role">
+                                        Role
+                                    </label>
+                                    <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition" id="register-role">
+                                        <option value="student">
+                                            Student
+                                        </option>
+                                        <option value="teacher">
+                                            Teacher
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="hidden text-red-500 text-sm" id="register-error">
+                                </div>
+                                <div class="hidden text-green-500 text-sm" id="register-success">
+                                </div>
+                                <button class="w-full py-3 bg-green-700 hover:bg-green-600 text-white rounded-lg font-medium transition" id="register-btn">
+                                    Register
+                                </button>
+                            </div>
+                            <p class="mt-4 text-xs text-gray-500 text-center">
+                                New accounts require admin approval
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Calendar Section -->
+                <div class="hidden fade-in" id="calendar-section">
+                    <!-- Calendar Controls -->
+                    <div class="bg-white rounded-xl shadow-lg p-4 mb-4">
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <div class="flex items-center space-x-2">
+                                <button class="px-4 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg transition flex items-center" id="prev-week">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                        </path>
+                                    </svg>
+                                    Previous
+                                </button>
+                                <button class="px-4 py-2 bg-yellow-500 hover:bg-yellow-400 text-green-900 rounded-lg font-medium transition" id="today-btn">
+                                    Today
+                                </button>
+                                <button class="px-4 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg transition flex items-center" id="next-week">
+                                    Next
+                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="text-lg font-semibold text-green-800" id="current-week-display">
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <label class="text-sm font-medium text-gray-700" for="room-filter">
+                                    Filter Room:
+                                </label>
+                                <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" id="room-filter">
+                                    <option value="all">
+                                        All Rooms
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Legend -->
+                        <div class="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-4 h-4 bg-green-500 rounded">
+                                </div>
+                                <span class="text-sm text-gray-600">
+           Your Booking
+          </span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-4 h-4 bg-red-500 rounded">
+                                </div>
+                                <span class="text-sm text-gray-600">
+           Other's Booking
+          </span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-4 h-4 bg-yellow-400 rounded">
+                                </div>
+                                <span class="text-sm text-gray-600">
+           Today
+          </span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-4 h-4 bg-gray-300 rounded">
+                                </div>
+                                <span class="text-sm text-gray-600">
+           Holiday
+          </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Calendar Grid -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="overflow-x-auto scrollbar-thin">
+                            <table class="w-full min-w-[900px]">
+                                <thead>
+                                <tr class="gradient-bg text-white" id="calendar-header">
+                                    <th class="p-3 text-left font-medium w-32">
+                                        Period
+                                    </th>
+                                    <!-- Days will be inserted here -->
+                                </tr>
+                                </thead>
+                                <tbody id="calendar-body">
+                                <!-- Calendar grid will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- My Bookings Section -->
+                <div class="hidden fade-in" id="my-bookings-section">
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl font-display font-bold text-green-800">
+                                My Bookings
+                            </h2>
+                            <button class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg flex items-center space-x-2 transition" id="export-excel">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                    </path>
+                                </svg>
+                                <span>
+           Export to Excel
+          </span>
+                            </button>
+                        </div>
+                        <div class="space-y-3" id="my-bookings-list">
+                            <!-- Bookings will be inserted here -->
+                        </div>
+                        <div class="hidden text-center py-12 text-gray-500" id="no-bookings">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                </path>
+                            </svg>
+                            <p class="text-lg">
+                                No bookings found
+                            </p>
+                            <p class="text-sm">
+                                Click on a slot in the calendar to make a booking
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Admin Section -->
+                <div class="hidden fade-in" id="admin-section">
+                    <!-- Admin Tabs -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-4">
+                        <div class="flex border-b">
+                            <button class="flex-1 py-3 text-center font-medium tab-active transition" id="admin-stats-tab">
+                                Statistics
+                            </button>
+                            <button class="flex-1 py-3 text-center font-medium text-gray-500 hover:text-green-700 transition" id="admin-audit-tab">
+                                Audit Log
+                            </button>
+                            <button class="flex-1 py-3 text-center font-medium text-gray-500 hover:text-green-700 transition" id="admin-users-tab">
+                                User Management
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Statistics Panel -->
+                    <div class="fade-in" id="admin-stats-panel">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-gradient-to-br from-green-500 to-green-700 rounded-xl p-4 text-white">
+                                <p class="text-sm opacity-80">
+                                    Total Active Bookings
+                                </p>
+                                <p class="text-3xl font-bold" id="stat-total-bookings">
+                                    0
+                                </p>
+                            </div>
+                            <div class="bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl p-4 text-green-900">
+                                <p class="text-sm opacity-80">
+                                    Most Booked Room
+                                </p>
+                                <p class="text-xl font-bold truncate" id="stat-popular-room">
+                                    -
+                                </p>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl p-4 text-white">
+                                <p class="text-sm opacity-80">
+                                    Busiest Period
+                                </p>
+                                <p class="text-xl font-bold" id="stat-busy-period">
+                                    -
+                                </p>
+                            </div>
+                            <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl p-4 text-white">
+                                <p class="text-sm opacity-80">
+                                    Most Active Teacher
+                                </p>
+                                <p class="text-xl font-bold truncate" id="stat-active-teacher">
+                                    -
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-semibold text-green-800 mb-4">
+                                Booking Statistics
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <p class="text-sm text-gray-500">
+                                        Average Bookings per User
+                                    </p>
+                                    <p class="text-2xl font-bold text-green-700" id="stat-avg-bookings">
+                                        0
+                                    </p>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <p class="text-sm text-gray-500">
+                                        Median Bookings per User
+                                    </p>
+                                    <p class="text-2xl font-bold text-green-700" id="stat-median-bookings">
+                                        0
+                                    </p>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <p class="text-sm text-gray-500">
+                                        Std Deviation
+                                    </p>
+                                    <p class="text-2xl font-bold text-green-700" id="stat-std-bookings">
+                                        0
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Audit Log Panel -->
+                    <div class="hidden fade-in" id="admin-audit-panel">
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-semibold text-green-800 mb-4">
+                                Recent Activity (Last 50)
+                            </h3>
+                            <div class="space-y-2 max-h-96 overflow-y-auto scrollbar-thin" id="audit-log-list">
+                                <!-- Audit entries will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- User Management Panel -->
+                    <div class="hidden fade-in" id="admin-users-panel">
+                        <!-- Pending Approvals -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 mb-4">
+                            <h3 class="text-lg font-semibold text-green-800 mb-4">
+                                Pending Approvals
+                            </h3>
+                            <div class="space-y-2" id="pending-users-list">
+                                <!-- Pending users will be inserted here -->
+                            </div>
+                            <div class="hidden text-center py-6 text-gray-500" id="no-pending">
+                                No pending approvals
+                            </div>
+                        </div>
+                        <!-- All Users -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-lg font-semibold text-green-800 mb-4">
+                                All Users
+                            </h3>
+                            <div class="space-y-2 max-h-96 overflow-y-auto scrollbar-thin" id="all-users-list">
+                                <!-- Users will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- Booking Modal -->
+    <div class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 p-4" id="booking-modal">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90%] overflow-y-auto slide-in">
+            <div class="gradient-bg text-white p-4 rounded-t-xl">
+                <h3 class="text-xl font-display font-bold" id="modal-title">
+                    New Booking
+                </h3>
+                <p class="text-sm text-green-200" id="modal-subtitle">
+                </p>
+            </div>
+            <div class="p-6">
+                <!-- Existing Bookings -->
+                <div class="hidden mb-4 p-3 bg-gray-100 rounded-lg" id="existing-bookings">
+                    <p class="text-sm font-medium text-gray-700 mb-2">
+                        Existing Bookings:
+                    </p>
+                    <div class="space-y-1" id="existing-bookings-list">
+                    </div>
+                </div>
+                <!-- Cinema-style Seat Selection for Computer Labs -->
+                <div class="hidden mb-6" id="seat-selection">
+                    <!-- Screen Indicator -->
+                    <div class="screen-indicator mb-6 py-3 text-center">
+                        <p class="text-white text-sm font-semibold tracking-wider">
+                            PROJECTOR SCREEN
+                        </p>
+                    </div>
+                    <!-- Seat Legend -->
+                    <div class="flex items-center justify-center gap-6 mb-4 text-sm">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
+                            </div>
+                            <span class="text-gray-600">
+          Available
+         </span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-lg border-2 border-green-700">
+                            </div>
+                            <span class="text-gray-600">
+          Selected
+         </span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg opacity-70">
+                            </div>
+                            <span class="text-gray-600">
+          Booked
+         </span>
+                        </div>
+                    </div>
+                    <!-- Cinema-style Seat Grid -->
+                    <div class="bg-gradient-to-b from-gray-50 to-white p-6 rounded-xl border-2 border-gray-200" id="seat-grid-container">
+                        <div class="space-y-3" id="seat-grid">
+                            <!-- Rows will be dynamically generated here -->
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <p class="text-lg font-semibold text-green-700" id="selected-seats-count">
+                            0 seats selected
+                        </p>
+                    </div>
+                </div>
+                <!-- Booking Form -->
+                <div id="booking-form-container">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="booking-room">
+                                Room *
+                            </label>
+                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" id="booking-room">
+                                <option value="">
+                                    Select a room
+                                </option>
+                            </select>
+                        </div>
+                        <div class="hidden" id="seat-count-container">
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="seat-count-input">
+                                Number of Seats *
+                            </label>
+                            <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" id="seat-count-input" max="32" min="1" placeholder="Enter number of seats (max 32)" type="number"/>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Maximum 32 seats per booking
+                            </p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="booking-purpose">
+                                Purpose *
+                            </label>
+                            <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" id="booking-purpose" placeholder="e.g., Year 10 Physics Lesson" type="text"/>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="booking-recurrence">
+                                Recurring Booking
+                            </label>
+                            <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" id="booking-recurrence">
+                                <option value="none">
+                                    No recurrence
+                                </option>
+                                <option value="weekly">
+                                    Weekly (up to 8 weeks)
+                                </option>
+                                <option value="biweekly">
+                                    Bi-weekly (up to 8 weeks)
+                                </option>
+                            </select>
+                        </div>
+                        <div class="hidden text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg" id="recurrence-preview"></div>
+                        <div class="hidden text-sm text-gray-600 bg-blue-50 p-3 rounded-lg" id="teacher-booking-limit-note">
+                            Teachers can have a maximum of 10 active bookings.
+                        </div>
+                        <div class="hidden text-red-500 text-sm" id="booking-error">
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="flex-1 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition" id="cancel-booking">
+                                Cancel
+                            </button>
+                            <button class="flex-1 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg transition" id="confirm-booking">
+                                Confirm Booking
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- View Only Mode -->
+                <div class="hidden" id="view-only-container">
+                    <p class="text-gray-600 mb-4">
+                        You are viewing this slot. Only teachers and admins can make bookings.
+                    </p>
+                    <button class="w-full py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg transition" id="close-view-only">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Confirmation Modal -->
+    <div class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" id="delete-modal">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full slide-in">
+            <div class="p-6 text-center">
+                <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                    </path>
+                </svg>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">
+                    Confirm Deletion
+                </h3>
+                <p class="text-gray-600 mb-6" id="delete-message">
+                    Are you sure you want to delete this booking?
+                </p>
+                <div class="flex space-x-3">
+                    <button class="flex-1 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition" id="cancel-delete">
+                        Cancel
+                    </button>
+                    <button class="flex-1 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition" id="confirm-delete">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Remove user confirmation modal (Cancel/OK only) -->
+    <div class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" id="remove-user-modal">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full slide-in">
+            <div class="p-6 text-center">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Confirm removal</h3>
+                <p class="text-gray-700 mb-6 whitespace-pre-line" id="remove-user-message"></p>
+
+                <div class="flex space-x-3">
+                    <button class="w-1/2 py-2 bg-gray-300 hover:bg-gray-200 text-gray-900 rounded-lg transition" id="remove-user-cancel">
+                        Cancel
+                    </button>
+                    <button class="w-1/2 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition" id="remove-user-ok">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Teacher booking limit modal (OK only) -->
+    <div class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" id="teacher-limit-modal">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full slide-in">
+            <div class="p-6 text-center">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Booking limit reached</h3>
+                <p class="text-gray-700 mb-6 whitespace-pre-line" id="teacher-limit-message"></p>
+                <button class="w-full py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg transition" id="teacher-limit-ok">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Partial recurrence conflict modal (Cancel / Proceed) -->
+    <div class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" id="partial-conflict-modal">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full slide-in">
+            <div class="p-6 text-center">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Recurring booking conflicts</h3>
+                <p class="text-gray-700 mb-6 whitespace-pre-line" id="partial-conflict-message"></p>
+                <div class="flex space-x-3">
+                    <button class="flex-1 py-2 bg-gray-300 hover:bg-gray-200 text-gray-900 rounded-lg transition" id="partial-conflict-cancel">
+                        Cancel
+                    </button>
+                    <button class="flex-1 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg transition" id="partial-conflict-proceed">
+                        Proceed
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="hidden fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all transform translate-y-full" id="toast">
+        <p id="toast-message">
+        </p>
+    </div>
+</div>
+<script src="js/models.js">
+</script>
+<script src="js/constants.js">
+</script>
+<script src="js/utils.js">
+</script>
+<script src="js/storage.js">
+</script>
+<script src="js/auth.js">
+</script>
+<script src="js/notifications.js">
+</script>
+<script src="js/undo.js">
+</script>
+<script src="js/ui.js">
+</script>
+<script src="js/booking.js">
+</script>
+<script src="js/reminders.js">
+</script>
+<script src="js/export.js">
+</script>
+<script src="js/events.js">
+</script>
+<script src="js/index.js">
+</script>
+</body>
+</html>
